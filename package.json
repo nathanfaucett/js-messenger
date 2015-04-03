@@ -1,0 +1,29 @@
+{
+  "name": "messenger",
+  "version": "0.0.1",
+  "description": "messenger for the browser and node.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nathanfaucett/messenger.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "example": "comn -f example/src/index.js -o example/index.js && comn -f example/src/worker.js -o example/worker.js"
+  },
+  "keywords": [
+    "messenger",
+    "messenger.js"
+  ],
+  "author": "Nathan Faucett",
+  "license": "BSD-2-Clause",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-jsbeautifier": "^0.2.7",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "environment": "git://github.com/nathanfaucett/environment"
+  }
+}

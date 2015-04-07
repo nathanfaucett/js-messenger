@@ -1,10 +1,10 @@
-var Socket = require("./socket");
+var SocketTransportPrototype;
 
 
 module.exports = Messenger;
 
 
-Messenger.Socket = Socket;
+Messenger.createSocket = createSocket;
 
 
 function Messenger(socket) {
@@ -93,3 +93,31 @@ function emit(listeners, data, callback) {
 
     next(undefined, data);
 }
+
+function createSocket() {
+    var client = new SocketTransport(),
+        server = new SocketTransport();
+
+    client.socket = server;
+    server.socket = client;
+
+    return {
+        client: client,
+        server: server
+    };
+}
+
+function SocketTransport() {
+    this.socket = null;
+}
+SocketTransportPrototype = SocketTransport.prototype;
+
+SocketTransportPrototype.onMessage = null;
+
+SocketTransportPrototype.postMessage = function(data) {
+    var socket = this.socket;
+
+    if (socket.onMessage) {
+        socket.onMessage(data);
+    }
+};

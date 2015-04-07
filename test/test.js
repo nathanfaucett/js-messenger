@@ -4,9 +4,9 @@ var assert = require("assert"),
 
 describe("Messenger", function() {
     it("should emit data to client/server calling client/server listerners", function() {
-        var Socket = new Messenger.Socket(),
-            client = new Messenger(Socket.client),
-            server = new Messenger(Socket.server);
+        var socket = Messenger.createSocket(),
+            client = new Messenger(socket.client),
+            server = new Messenger(socket.server);
 
         server.on("message", function(data, callback) {
             callback(undefined, data);

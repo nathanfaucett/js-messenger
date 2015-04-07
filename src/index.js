@@ -39,7 +39,9 @@ function Messenger(socket) {
     this.emit = function(name, data, callback) {
         var id = MESSAGE_ID++;
 
-        messages[id] = callback;
+        if (callback) {
+            messages[id] = callback;
+        }
 
         socket.postMessage({
             id: id,

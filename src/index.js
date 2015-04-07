@@ -13,7 +13,7 @@ function Messenger(socket) {
         messages = {};
 
     socket.onMessage = function(data) {
-        var message = JSON.parse(data),
+        var message = data,
             id = message.id,
             name = message.name,
             callback = messages[id];
@@ -21,11 +21,11 @@ function Messenger(socket) {
         if (name) {
             if (listeners[name]) {
                 emit(listeners[name], message.data, function callback(error, data) {
-                    socket.postMessage(JSON.stringify({
+                    socket.postMessage({
                         id: id,
                         error: error || undefined,
                         data: data
-                    }));
+                    });
                 });
             }
         } else {
@@ -41,11 +41,11 @@ function Messenger(socket) {
 
         messages[id] = callback;
 
-        socket.postMessage(JSON.stringify({
+        socket.postMessage({
             id: id,
             name: name,
             data: data
-        }));
+        });
     };
 
     this.on = function(name, callback) {

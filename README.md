@@ -1,4 +1,4 @@
-messenger
+MessengerAndroid
 =======
 
-messenger for the browser and node.js
+MessengerAndroid for the browser and node.js

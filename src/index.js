@@ -8,7 +8,7 @@ module.exports = Messenger;
 function Messenger(adaptor) {
     var _this = this;
 
-    this.__id = MESSENGER_ID++;
+    this.__id = (MESSENGER_ID++).toString(36);
     this.__messageId = 0;
     this.__callbacks = {};
     this.__listeners = {};
@@ -43,7 +43,7 @@ MessengerPrototype.onMessage = function(data) {
             });
         }
     } else {
-        if (callback) {
+        if (callback && isMatch(id, this.__id)) {
             callback(message.error, message.data);
             delete callbacks[id];
         }
@@ -51,7 +51,7 @@ MessengerPrototype.onMessage = function(data) {
 };
 
 MessengerPrototype.emit = function(name, data, callback) {
-    var id = this.__id + "-" + this.__messageId++;
+    var id = this.__id + "-" + (this.__messageId++).toString(36);
 
     if (callback) {
         this.__callbacks[id] = callback;
@@ -108,4 +108,8 @@ function emit(listeners, data, callback) {
     }
 
     next(undefined, data);
+}
+
+function isMatch(messageId, id) {
+    return messageId.split("-")[0] === id;
 }

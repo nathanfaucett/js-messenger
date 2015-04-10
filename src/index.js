@@ -21,9 +21,8 @@ function Messenger(adaptor) {
 }
 MessengerPrototype = Messenger.prototype;
 
-MessengerPrototype.onMessage = function(data) {
-    var message = data,
-        id = message.id,
+MessengerPrototype.onMessage = function(message) {
+    var id = message.id,
         name = message.name,
         callbacks = this.__callbacks,
         callback = callbacks[id],

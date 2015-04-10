@@ -55,9 +55,11 @@ function Socket() {
 }
 
 Socket.prototype.addMessageListener = function(callback) {
-    this.onMessage = callback;
+    this.onMessage = function(data) {
+        callback(JSON.parse(data));
+    };
 };
 
 Socket.prototype.postMessage = function(data) {
-    this.socket.onMessage(data);
+    this.socket.onMessage(JSON.stringify(data));
 };

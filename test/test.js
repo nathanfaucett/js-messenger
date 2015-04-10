@@ -2,9 +2,9 @@ var assert = require("assert"),
     Messenger = require("../src/index");
 
 
-describe("Messenger", function() {
-    it("should emit data to client/server calling client/server listerners", function() {
-        var socket = Messenger.createSocket(),
+describe("Messenger(adaptor)", function() {
+    it("should create Messenger using adaptor's postMessage and addMessageListener", function() {
+        var socket = createTwoWaySocket(),
             client = new Messenger(socket.client),
             server = new Messenger(socket.server);
 
@@ -35,3 +35,29 @@ describe("Messenger", function() {
         });
     });
 });
+
+function createTwoWaySocket() {
+    var client = new Socket(),
+        server = new Socket();
+
+    client.socket = server;
+    server.socket = client;
+
+    return {
+        client: client,
+        server: server
+    };
+}
+
+function Socket() {
+    this.socket = null;
+    this.onMessage = null;
+}
+
+Socket.prototype.addMessageListener = function(callback) {
+    this.onMessage = callback;
+};
+
+Socket.prototype.postMessage = function(data) {
+    this.socket.onMessage(data);
+};

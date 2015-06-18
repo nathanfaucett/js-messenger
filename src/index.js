@@ -5,7 +5,7 @@ var MESSENGER_ID = 0,
 module.exports = Messenger;
 
 
-function Messenger(adaptor) {
+function Messenger(adapter) {
     var _this = this;
 
     this.__id = (MESSENGER_ID++).toString(36);
@@ -13,9 +13,9 @@ function Messenger(adaptor) {
     this.__callbacks = {};
     this.__listeners = {};
 
-    this.__adaptor = adaptor;
+    this.__adapter = adapter;
 
-    adaptor.addMessageListener(function onMessage(data) {
+    adapter.addMessageListener(function onMessage(data) {
         _this.onMessage(data);
     });
 }
@@ -26,15 +26,15 @@ MessengerPrototype.onMessage = function(message) {
         name = message.name,
         callbacks = this.__callbacks,
         callback = callbacks[id],
-        listeners, adaptor;
+        listeners, adapter;
 
     if (name) {
         listeners = this.__listeners;
-        adaptor = this.__adaptor;
+        adapter = this.__adapter;
 
         if (listeners[name]) {
             emit(listeners[name], message.data, function callback(error, data) {
-                adaptor.postMessage({
+                adapter.postMessage({
                     id: id,
                     error: error || undefined,
                     data: data
@@ -56,7 +56,7 @@ MessengerPrototype.emit = function(name, data, callback) {
         this.__callbacks[id] = callback;
     }
 
-    this.__adaptor.postMessage({
+    this.__adapter.postMessage({
         id: id,
         name: name,
         data: data

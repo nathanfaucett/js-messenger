@@ -2,8 +2,8 @@ var assert = require("assert"),
     Messenger = require("../src/index");
 
 
-describe("Messenger(adaptor)", function() {
-    it("should create Messenger using adaptor's postMessage and addMessageListener", function() {
+describe("Messenger(adapter)", function() {
+    it("should create Messenger using adapter's postMessage and addMessageListener", function() {
         var socket = createTwoWaySocket(),
             client = new Messenger(socket.client),
             server = new Messenger(socket.server);

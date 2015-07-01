@@ -63,6 +63,8 @@ MessengerPrototype.emit = function(name, data, callback) {
     });
 };
 
+MessengerPrototype.send = MessengerPrototype.emit;
+
 MessengerPrototype.on = function(name, callback) {
     var listeners = this.__listeners,
         listener = listeners[name] || (listeners[name] = []);
@@ -82,6 +84,10 @@ MessengerPrototype.off = function(name, callback) {
             if (listener[i] === callback) {
                 listener.splice(i, 1);
             }
+        }
+
+        if (listener.length === 0) {
+            delete listeners[name];
         }
     }
 };

@@ -7,6 +7,9 @@
     "url": "https://github.com/nathanfaucett/messenger.git"
   },
   "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "keywords": [
     "messenger",
     "messenger.js"

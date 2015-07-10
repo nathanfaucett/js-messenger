@@ -33,7 +33,7 @@ MessengerPrototype.onMessage = function(message) {
         adapter = this.__adapter;
 
         if (listeners[name]) {
-            emit(listeners[name], message.data, function callback(error, data) {
+            Messenger_emit(this, listeners[name], message.data, function callback(error, data) {
                 adapter.postMessage({
                     id: id,
                     error: error || undefined,
@@ -92,7 +92,7 @@ MessengerPrototype.off = function(name, callback) {
     }
 };
 
-function emit(listeners, data, callback) {
+function Messenger_emit(_this, listeners, data, callback) {
     var index = 0,
         length = listeners.length,
         called = false;
@@ -108,7 +108,7 @@ function emit(listeners, data, callback) {
         if (err || index === length) {
             done(err, data);
         } else {
-            listeners[index++](data, next);
+            listeners[index++](data, next, _this);
         }
     }
 

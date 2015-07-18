@@ -33,7 +33,7 @@ MessengerPrototype.onMessage = function(message) {
         adapter = this.__adapter;
 
         if (listeners[name]) {
-            Messenger_emit(this, listeners[name], message.data, function callback(error, data) {
+            Messenger_emit(this, listeners[name], message.data, function emitCallback(error, data) {
                 adapter.postMessage({
                     id: id,
                     error: error || undefined,
@@ -43,7 +43,7 @@ MessengerPrototype.onMessage = function(message) {
         }
     } else {
         if (callback && isMatch(id, this.__id)) {
-            callback(message.error, message.data);
+            callback(message.error, message.data, this);
             delete callbacks[id];
         }
     }
@@ -97,16 +97,16 @@ function Messenger_emit(_this, listeners, data, callback) {
         length = listeners.length,
         called = false;
 
-    function done(err, data) {
+    function done(error, data) {
         if (called === false) {
             called = true;
-            callback(err, data);
+            callback(error, data);
         }
     }
 
-    function next(err, data) {
-        if (err || index === length) {
-            done(err, data);
+    function next(error, data) {
+        if (error || index === length) {
+            done(error, data);
         } else {
             listeners[index++](data, next, _this);
         }

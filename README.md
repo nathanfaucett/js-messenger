@@ -1,11 +1,11 @@
 Messenger
 =======
 
-Messenger for the browser and node.js
+two way messenger, requires an adapter
 
 
 ```javascript
-var Messenger = require("messenger"),
+var Messenger = require("@nathanfaucett/messenger"),
     SomeMessengerAdapter = require("some_messenger_adapter");
 
 

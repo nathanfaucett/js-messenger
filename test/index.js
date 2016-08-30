@@ -59,6 +59,7 @@ tape("should create Messenger using adapter's postMessage and addMessageListener
     });
 });
 
+
 function createTwoWaySocket() {
     var client = new Socket(),
         server = new Socket();
@@ -72,17 +73,22 @@ function createTwoWaySocket() {
     };
 }
 
+
+var SocketPrototype;
+
+
 function Socket() {
     this.socket = null;
     this.__messages = [];
 }
+SocketPrototype = Socket.prototype;
 
-Socket.prototype.addMessageListener = function(callback) {
+SocketPrototype.addMessageListener = function(callback) {
     var messages = this.__messages;
     messages[messages.length] = callback;
 };
 
-Socket.prototype.onMessage = function(data) {
+SocketPrototype.onMessage = function(data) {
     var messages = this.__messages,
         i = -1,
         il = messages.length - 1;
@@ -92,7 +98,7 @@ Socket.prototype.onMessage = function(data) {
     }
 };
 
-Socket.prototype.postMessage = function(data) {
+SocketPrototype.postMessage = function(data) {
     var socket = this.socket;
 
     process.nextTick(function() {

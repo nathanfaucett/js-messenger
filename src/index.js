@@ -1,5 +1,8 @@
-var MESSENGER_ID = 0,
-    MessengerPrototype;
+var has = require("@nathanfaucett/has"),
+    uuid = require("@nathanfaucett/uuid");
+
+
+var MessengerPrototype;
 
 
 module.exports = Messenger;
@@ -8,7 +11,7 @@ module.exports = Messenger;
 function Messenger(adapter) {
     var _this = this;
 
-    this.__id = (MESSENGER_ID++).toString(36);
+    this.__id = uuid.v4();
     this.__messageId = 0;
     this.__callbacks = {};
     this.__listeners = {};
@@ -32,8 +35,8 @@ MessengerPrototype.onMessage = function(message) {
         listeners = this.__listeners;
         adapter = this.__adapter;
 
-        if (listeners[name]) {
-            Messenger_emit(this, listeners[name], message.data, function emitCallback(error, data) {
+        if (has(listeners, name)) {
+            Messenger_send(this, listeners[name], message.data, function sendCallback(error, data) {
                 adapter.postMessage({
                     id: id,
                     error: error || undefined,
@@ -49,11 +52,12 @@ MessengerPrototype.onMessage = function(message) {
     }
 };
 
-MessengerPrototype.emit = function(name, data, callback) {
-    var id = this.__id + "-" + (this.__messageId++).toString(36);
+MessengerPrototype.send = function(name, data, callback) {
+    var callbacks = this.__callbacks,
+        id = this.__id + "." + (this.__messageId++).toString(36);
 
-    if (callback) {
-        this.__callbacks[id] = callback;
+    if (callback && !has(callbacks, id)) {
+        callbacks[id] = callback;
     }
 
     this.__adapter.postMessage({
@@ -63,7 +67,7 @@ MessengerPrototype.emit = function(name, data, callback) {
     });
 };
 
-MessengerPrototype.send = MessengerPrototype.emit;
+MessengerPrototype.emit = MessengerPrototype.send;
 
 MessengerPrototype.on = function(name, callback) {
     var listeners = this.__listeners,
@@ -74,10 +78,10 @@ MessengerPrototype.on = function(name, callback) {
 
 MessengerPrototype.off = function(name, callback) {
     var listeners = this.__listeners,
-        listener = listeners[name],
-        i;
+        listener, i;
 
-    if (listener) {
+    if (has(listeners, name)) {
+        listener = listeners[name];
         i = listener.length;
 
         while (i--) {
@@ -92,7 +96,7 @@ MessengerPrototype.off = function(name, callback) {
     }
 };
 
-function Messenger_emit(_this, listeners, data, callback) {
+function Messenger_send(_this, listeners, data, callback) {
     var index = 0,
         length = listeners.length,
         called = false;
@@ -116,5 +120,5 @@ function Messenger_emit(_this, listeners, data, callback) {
 }
 
 function isMatch(messageId, id) {
-    return messageId.split("-")[0] === id;
+    return messageId.split(".")[0] === id;
 }

@@ -1,5 +1,5 @@
-var has = require("@nathanfaucett/has"),
-    uuid = require("@nathanfaucett/uuid");
+var uuid = require("@nathanfaucett/uuid"),
+    Message = require("./Message");
 
 
 var MessengerPrototype;
@@ -27,28 +27,23 @@ MessengerPrototype = Messenger.prototype;
 MessengerPrototype.onMessage = function(message) {
     var id = message.id,
         name = message.name,
-        callbacks = this.__callbacks,
-        callback = callbacks[id],
-        listeners, adapter;
+        callbacks, callback, listeners, adapter, listenersArray;
 
     if (name) {
         listeners = this.__listeners;
         adapter = this.__adapter;
 
-        if (has(listeners, name)) {
-            Messenger_send(this, listeners[name], message.data, function sendCallback(error, data) {
-                adapter.postMessage({
-                    id: id,
-                    error: error || undefined,
-                    data: data
-                });
+        if ((listenersArray = listeners[name])) {
+            Messenger_send(this, listenersArray, message.data, function onSendCallback(error, data) {
+                adapter.postMessage(new Message(id, null, error, data));
             });
         }
-    } else {
-        if (callback && isMatch(id, this.__id)) {
-            callback(message.error, message.data, this);
-            delete callbacks[id];
-        }
+    } else if (
+        (callback = (callbacks = this.__callbacks)[id]) &&
+        isMatch(id, this.__id)
+    ) {
+        callback(message.error, message.data, this);
+        delete callbacks[id];
     }
 };
 
@@ -56,15 +51,11 @@ MessengerPrototype.send = function(name, data, callback) {
     var callbacks = this.__callbacks,
         id = this.__id + "." + (this.__messageId++).toString(36);
 
-    if (callback && !has(callbacks, id)) {
+    if (callback) {
         callbacks[id] = callback;
     }
 
-    this.__adapter.postMessage({
-        id: id,
-        name: name,
-        data: data
-    });
+    this.__adapter.postMessage(new Message(id, name, null, data));
 };
 
 MessengerPrototype.emit = MessengerPrototype.send;
@@ -80,8 +71,7 @@ MessengerPrototype.off = function(name, callback) {
     var listeners = this.__listeners,
         listener, i;
 
-    if (has(listeners, name)) {
-        listener = listeners[name];
+    if ((listener = listeners[name])) {
         i = listener.length;
 
         while (i--) {
@@ -101,22 +91,18 @@ function Messenger_send(_this, listeners, data, callback) {
         length = listeners.length,
         called = false;
 
-    function done(error, data) {
-        if (called === false) {
-            called = true;
-            callback(error, data);
-        }
-    }
-
     function next(error, data) {
-        if (error || index === length) {
-            done(error, data);
-        } else {
+        if (!error && index !== length) {
             listeners[index++](data, next, _this);
+        } else {
+            if (called === false) {
+                called = true;
+                callback(error, data);
+            }
         }
     }
 
-    next(undefined, data);
+    next(void(0), data);
 }
 
 function isMatch(messageId, id) {

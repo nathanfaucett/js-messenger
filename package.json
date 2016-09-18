@@ -1,6 +1,6 @@
 {
   "name": "@nathanfaucett/messenger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "two way messenger, requires an adapter",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "@nathanfaucett/task": "^0.0.5",
+    "@nathanfaucett/task": "^0.0.6",
     "gulp-jsbeautifier": "^2.0.3",
     "gulp-jshint": "^2.0.1",
     "jshint": "^2.9.3",
@@ -30,7 +30,6 @@
     "zuul": "^3.11.0"
   },
   "dependencies": {
-    "@nathanfaucett/has": "0.0.1",
-    "@nathanfaucett/uuid": "0.0.2"
+    "@nathanfaucett/uuid": "^0.0.2"
   }
 }
